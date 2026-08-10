@@ -1,0 +1,88 @@
+@startuml Worker_Activity_Diagram
+
+title LabourBridge - Worker Activity Diagram\nJob Search and Application Process
+
+skinparam activityBackgroundColor #ADD8E6
+skinparam activityBorderColor #000000
+skinparam activityFontSize 11
+skinparam activityFontStyle bold
+skinparam activityDiamondBackgroundColor #FFD700
+skinparam activityDiamondBorderColor #000000
+skinparam activityStartColor #000000
+skinparam activityEndColor #000000
+skinparam activityBarColor #000000
+
+|Worker|
+start
+
+:Login to System;
+
+:View Worker Dashboard;
+
+:Navigate to Jobs Section;
+
+|System|
+:Display Job Listings;
+
+|Worker|
+:Apply Filters
+(Skills, Location, Salary);
+
+|System|
+:Filter and Sort Jobs;
+
+:Show Filtered Results;
+
+|Worker|
+:Browse Job List;
+
+:Select a Job;
+
+|System|
+:Display Job Details;
+
+|Worker|
+if (Interested in Job?) then (yes)
+  
+  if (Profile Complete?) then (yes)
+    :Click "Apply Now";
+  else (no)
+    :Complete Profile;
+    :Add Missing Information;
+    :Click "Apply Now";
+  endif
+  
+  |System|
+  :Validate Application;
+  
+  :Create Application Record;
+  
+  :Set Status to "Pending";
+  
+  :Send Notification to Employer;
+  
+  |Worker|
+  :View Success Message;
+  
+  if (Apply to More Jobs?) then (yes)
+    :Return to Job List;
+    detach
+  else (no)
+    :View My Applications;
+  endif
+  
+else (no)
+  :Return to Job List;
+  detach
+endif
+
+stop
+
+legend right
+  |= Color |= Description |
+  | <#ADD8E6> | Worker Action |
+  | <#90EE90> | System Action |
+  | <#FFD700> | Decision Point |
+endlegend
+
+@enduml

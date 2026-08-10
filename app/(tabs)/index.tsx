@@ -1,98 +1,161 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Text, TouchableOpacity, ScrollView, View, StyleSheet, Platform } from 'react-native';
+import LanguageSelector from '@/components/LanguageSelector';
+import ThemeToggle from '@/components/ThemeToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function RoleSelectionScreen() {
+  const { t } = useLanguage();
+  const { colors } = useTheme();
 
-export default function HomeScreen() {
+  const saveRole = async (role: string) => {
+    try {
+      if (Platform.OS === 'web') {
+        // Use localStorage for web
+        localStorage.setItem('userRole', role);
+      } else {
+        // Use SecureStore for mobile
+        await SecureStore.setItemAsync('userRole', role);
+      }
+      router.push('/auth');
+    } catch (error) {
+      console.error('Error saving role:', error);
+      alert('Error saving role. Please try again.');
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ScrollView 
+      style={[styles.container, { backgroundColor: colors.background }]}
+      contentContainerStyle={styles.contentContainer}
+    >
+      {/* Header Controls */}
+      <View style={styles.headerControls}>
+        <LanguageSelector />
+        <ThemeToggle />
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      {/* Hero Section */}
+      <View style={styles.heroSection}>
+        <Text style={[styles.appName, { color: colors.text }]}>
+          {t('appName')}
+        </Text>
+        <Text style={[styles.tagline, { color: colors.textSecondary }]}>
+          {t('tagline')}
+        </Text>
+      </View>
+
+      {/* Role Cards */}
+      <View style={styles.cardsContainer}>
+        <Text style={[styles.selectText, { color: colors.text }]}>
+          {t('selectRole')}
+        </Text>
+
+        {/* Worker Card */}
+        <TouchableOpacity
+          onPress={() => saveRole('worker')}
+          style={styles.card}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={['#667eea', '#764ba2']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <Text style={styles.cardIcon}>👷</Text>
+            <Text style={styles.cardTitle}>{t('iAmWorker')}</Text>
+            <Text style={styles.cardSubtitle}>{t('workerSubtitle')}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Employer Card */}
+        <TouchableOpacity
+          onPress={() => saveRole('employer')}
+          style={styles.card}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={['#f093fb', '#f5576c']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <Text style={styles.cardIcon}>💼</Text>
+            <Text style={styles.cardTitle}>{t('iAmEmployer')}</Text>
+            <Text style={styles.cardSubtitle}>{t('employerSubtitle')}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 20,
+  },
+  headerControls: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 10,
+    marginTop: 10,
+  },
+  heroSection: {
     alignItems: 'center',
-    gap: 8,
+    marginTop: 40,
+    marginBottom: 40,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  appName: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  tagline: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  cardsContainer: {
+    flex: 1,
+  },
+  selectText: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  card: {
+    marginBottom: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  gradient: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  cardIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  cardTitle: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+  cardSubtitle: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
   },
 });

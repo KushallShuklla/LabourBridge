@@ -1,0 +1,89 @@
+@startuml LabourBridge_UseCase_Diagram
+
+title LabourBridge - Use Case Diagram
+
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecaseBackgroundColor #F0F0F0
+skinparam usecaseBorderColor #000000
+skinparam usecaseFontSize 10
+skinparam actorBackgroundColor #FFFFFF
+skinparam actorBorderColor #000000
+skinparam packageBackgroundColor #FFFFFF
+skinparam packageBorderColor #000000
+skinparam ranksep 80
+skinparam nodesep 60
+
+actor "Worker" as Worker
+actor "Employer" as Employer
+
+package "Authentication" #LightBlue {
+  usecase "Register" as UC01
+  usecase "Login" as UC02
+  usecase "Logout" as UC03
+  usecase "Select Role" as UC05
+}
+
+package "Worker Features" #LightGreen {
+  usecase "Create Profile" as UC06
+  usecase "Update Profile" as UC07
+  usecase "Search Jobs" as UC11
+  usecase "Apply for Job" as UC13
+  usecase "Track Applications" as UC14
+  usecase "Join Community" as UC19
+}
+
+package "Employer Features" #LightYellow {
+  usecase "Company Profile" as UC24
+  usecase "Post Job" as UC28
+  usecase "View Applications" as UC33
+  usecase "Review Application" as UC34
+  usecase "Shortlist Worker" as UC36
+  usecase "Search Talent" as UC38
+}
+
+package "Common" #LightCyan {
+  usecase "Notifications" as UC50
+  usecase "Settings" as UC51
+  usecase "Support" as UC53
+}
+
+actor "System" as System
+
+package "System Functions" #LightGray {
+  usecase "Send Notification" as UC56
+  usecase "Recommendations" as UC57
+  usecase "Auto-expire Jobs" as UC58
+}
+
+Worker --> UC01
+Worker --> UC02
+Worker --> UC06
+Worker --> UC07
+Worker --> UC11
+Worker --> UC13
+Worker --> UC14
+Worker --> UC19
+Worker --> UC50
+Worker --> UC51
+Worker --> UC53
+
+Employer --> UC01
+Employer --> UC02
+Employer --> UC24
+Employer --> UC28
+Employer --> UC33
+Employer --> UC34
+Employer --> UC36
+Employer --> UC38
+Employer --> UC50
+Employer --> UC51
+Employer --> UC53
+
+System --> UC56
+System --> UC57
+System --> UC58
+
+@enduml

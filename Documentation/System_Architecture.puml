@@ -1,0 +1,139 @@
+@startuml LabourBridge_System_Architecture
+
+title LabourBridge - System Architecture Diagram
+
+skinparam componentStyle rectangle
+skinparam linetype ortho
+
+!define PRESENTATION #E3F2FD
+!define GATEWAY #FFF9C4
+!define APPLICATION #C8E6C9
+!define DATA #FFCCBC
+!define EXTERNAL #F3E5F5
+!define INFRASTRUCTURE #CFD8DC
+
+package "Presentation Layer" PRESENTATION {
+  [Web Application\n(React)] as Web
+  [Mobile App\n(Android/iOS)] as Mobile
+  [Admin Dashboard] as Admin
+}
+
+package "API Gateway Layer" GATEWAY {
+  [API Gateway\n(Load Balancer)] as Gateway
+  [Auth & Authorization] as AuthGW
+}
+
+package "Application Layer\n(Microservices)" APPLICATION {
+  [Auth Service] as AuthSvc
+  [User Service] as UserSvc
+  [Job Service] as JobSvc
+  [Application Service] as AppSvc
+  [Notification Service] as NotifSvc
+  [Community Service] as CommSvc
+  [Analytics Service] as AnalyticsSvc
+  [Document Service] as DocSvc
+}
+
+package "Data Layer" DATA {
+  database "Primary DB\n(PostgreSQL)" as DB
+  database "Cache\n(Redis)" as Cache
+  database "File Storage\n(AWS S3)" as Storage
+  database "Search Engine\n(Elasticsearch)" as Search
+}
+
+package "External Services" EXTERNAL {
+  [Email Service\n(SendGrid)] as Email
+  [SMS Gateway] as SMS
+  [Payment Gateway] as Payment
+  [Cloud Storage] as Cloud
+}
+
+package "Infrastructure" INFRASTRUCTURE {
+  queue "Message Queue\n(RabbitMQ)" as Queue
+  [Monitoring\n(Prometheus)] as Monitor
+  [Logging\n(ELK Stack)] as Logging
+}
+
+' Presentation to Gateway
+Web --> Gateway
+Mobile --> Gateway
+Admin --> Gateway
+
+' Gateway to Auth
+Gateway --> AuthGW
+AuthGW --> AuthSvc
+
+' Gateway to Services
+Gateway --> UserSvc
+Gateway --> JobSvc
+Gateway --> AppSvc
+Gateway --> NotifSvc
+Gateway --> CommSvc
+Gateway --> AnalyticsSvc
+Gateway --> DocSvc
+
+' Services to Data Layer
+AuthSvc --> DB
+UserSvc --> DB
+JobSvc --> DB
+AppSvc --> DB
+NotifSvc --> DB
+CommSvc --> DB
+AnalyticsSvc --> DB
+
+UserSvc --> Cache
+JobSvc --> Cache
+JobSvc --> Search
+
+DocSvc --> Storage
+DocSvc --> DB
+
+' Services to Message Queue
+NotifSvc --> Queue
+AppSvc --> Queue
+JobSvc --> Queue
+
+' Queue to External Services
+Queue --> Email
+Queue --> SMS
+NotifSvc --> Email
+NotifSvc --> SMS
+
+AppSvc --> Payment
+DocSvc --> Cloud
+
+' Infrastructure Monitoring
+Monitor ..> Gateway
+Monitor ..> AuthSvc
+Monitor ..> UserSvc
+Monitor ..> JobSvc
+Monitor ..> DB
+
+Logging ..> Gateway
+Logging ..> AuthSvc
+Logging ..> UserSvc
+Logging ..> JobSvc
+
+note right of Gateway
+  **API Gateway**
+  - Load Balancing
+  - Rate Limiting
+  - Request Routing
+end note
+
+note bottom of DB
+  **Data Storage**
+  - User Data
+  - Jobs & Applications
+  - Communities
+  - Analytics
+end note
+
+note left of Queue
+  **Async Processing**
+  - Email Notifications
+  - SMS Alerts
+  - Background Jobs
+end note
+
+@enduml

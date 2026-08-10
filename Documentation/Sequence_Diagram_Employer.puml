@@ -1,0 +1,83 @@
+@startuml LabourBridge_Sequence_Employer
+
+title LabourBridge - Employer Job Management Sequence
+
+actor Employer
+participant "UI" as UI
+participant "AuthService" as Auth
+participant "JobService" as Job
+participant "ApplicationService" as App
+participant "NotificationService" as Notif
+database "Database" as DB
+
+== Authentication ==
+Employer -> UI: Open App
+UI -> Auth: login(email, password)
+Auth -> DB: validateCredentials()
+DB --> Auth: userDetails
+Auth --> UI: loginSuccess
+UI --> Employer: Show Dashboard
+
+== Post New Job ==
+Employer -> UI: Click Post Job
+UI --> Employer: Show Job Form
+Employer -> UI: Enter Job Details
+UI -> Job: createJob(jobData)
+Job -> DB: saveJob()
+DB --> Job: jobCreated
+Job --> UI: jobPosted
+UI --> Employer: "Job Posted Successfully"
+
+== View Applications ==
+Employer -> UI: View Applications
+UI -> App: getApplications(employerId)
+App -> DB: fetchApplicationsByEmployer()
+DB --> App: applicationList
+App --> UI: displayApplications
+UI --> Employer: Show All Applications
+
+== Review Application ==
+Employer -> UI: Select Application
+UI -> App: getApplicationDetails(applicationId)
+App -> DB: fetchApplication()
+DB --> App: applicationDetails
+App -> DB: fetchWorkerProfile()
+DB --> App: workerProfile
+App --> UI: displayFullDetails
+UI --> Employer: Show Worker Profile
+
+== Update Application Status ==
+Employer -> UI: Shortlist/Reject
+UI -> App: updateStatus(applicationId, status)
+App -> DB: updateApplicationStatus()
+DB --> App: statusUpdated
+App -> Notif: sendNotification(workerId, status)
+Notif -> DB: saveNotification()
+Notif --> App: notificationSent
+App --> UI: updateSuccess
+UI --> Employer: "Status Updated"
+
+== Manage Posted Jobs ==
+Employer -> UI: View My Jobs
+UI -> Job: getJobs(employerId)
+Job -> DB: fetchJobsByEmployer()
+DB --> Job: jobList
+Job --> UI: displayJobs
+UI --> Employer: Show Posted Jobs
+
+Employer -> UI: Edit/Delete Job
+alt Edit Job
+  UI -> Job: updateJob(jobId, newData)
+  Job -> DB: updateJobDetails()
+  DB --> Job: jobUpdated
+  Job --> UI: updateSuccess
+  UI --> Employer: "Job Updated"
+else Delete Job
+  UI -> Job: deleteJob(jobId)
+  Job -> DB: removeJob()
+  DB --> Job: jobDeleted
+  Job --> UI: deleteSuccess
+  UI --> Employer: "Job Deleted"
+end
+
+@enduml

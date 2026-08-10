@@ -1,0 +1,109 @@
+@startuml LabourBridge_DFD_Level1
+
+title LabourBridge - Level 1 DFD
+
+skinparam rectangle {
+  BackgroundColor #E3F2FD
+  BorderColor #000000
+}
+
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
+
+skinparam database {
+  BackgroundColor #FFF9C4
+  BorderColor #000000
+}
+
+actor "Worker" as Worker
+actor "Employer" as Employer
+actor "Admin" as Admin
+
+rectangle "1.0\nAuthentication\nManagement" as Auth #C8E6C9
+rectangle "2.0\nProfile\nManagement" as Profile #C8E6C9
+rectangle "3.0\nJob\nManagement" as Job #C8E6C9
+rectangle "4.0\nApplication\nProcessing" as Application #C8E6C9
+rectangle "5.0\nNotification\nSystem" as Notification #C8E6C9
+rectangle "6.0\nCommunity\nManagement" as Community #C8E6C9
+rectangle "7.0\nAnalytics &\nReporting" as Analytics #C8E6C9
+
+database "D1: User Database" as UserDB
+database "D2: Profile Database" as ProfileDB
+database "D3: Job Database" as JobDB
+database "D4: Application Database" as AppDB
+database "D5: Community Database" as CommDB
+database "D6: Document Storage" as DocStore
+
+' Worker flows
+Worker --> Auth : Login Credentials
+Auth --> Worker : Auth Token
+
+Worker --> Profile : Profile Data
+Profile --> Worker : Profile Info
+
+Worker --> Job : Search Criteria
+Job --> Worker : Job Listings
+
+Worker --> Application : Job Application
+Application --> Worker : Application Status
+
+Worker --> Community : Join/Post
+Community --> Worker : Community Updates
+
+' Employer flows
+Employer --> Auth : Login Credentials
+Auth --> Employer : Auth Token
+
+Employer --> Profile : Company Profile
+Profile --> Employer : Company Info
+
+Employer --> Job : Job Posting
+Job --> Employer : Posted Jobs
+
+Employer --> Application : Review/Status Update
+Application --> Employer : Applications List
+
+' Admin flows
+Admin --> Auth : Admin Credentials
+Auth --> Admin : Admin Token
+
+Admin --> Analytics : Request Reports
+Analytics --> Admin : System Reports
+
+' Process to Data Store flows
+Auth --> UserDB : Store/Verify User
+UserDB --> Auth : User Data
+
+Profile --> ProfileDB : Store Profile
+ProfileDB --> Profile : Profile Data
+
+Profile --> DocStore : Upload Documents
+DocStore --> Profile : Document URLs
+
+Job --> JobDB : Store Jobs
+JobDB --> Job : Job Data
+
+Application --> AppDB : Store Applications
+AppDB --> Application : Application Data
+
+Community --> CommDB : Store Communities
+CommDB --> Community : Community Data
+
+' Inter-process flows
+Auth --> Profile : User ID
+Profile --> Job : Worker Skills
+Job --> Application : Job Details
+Application --> Notification : Status Change
+Profile --> Application : Worker Profile
+Job --> Notification : New Job Alert
+Application --> Analytics : Application Stats
+Job --> Analytics : Job Stats
+Profile --> Analytics : User Stats
+
+' Notification to users
+Notification --> Worker : Notifications
+Notification --> Employer : Notifications
+
+@enduml

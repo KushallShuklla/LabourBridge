@@ -1,0 +1,154 @@
+@startuml LabourBridge_Deployment_Diagram
+
+title LabourBridge - Deployment Diagram
+
+skinparam nodeBackgroundColor #E3F2FD
+skinparam nodeBorderColor #000000
+skinparam componentBackgroundColor #FFFFFF
+skinparam databaseBackgroundColor #FFF9C4
+
+node "Client Devices" {
+  node "Web Browser" as Browser {
+    component "React Web App" as WebApp
+  }
+  
+  node "Mobile Device" as Mobile {
+    component "Android App" as Android
+    component "iOS App" as iOS
+  }
+}
+
+node "Load Balancer" as LB {
+  component "Nginx/AWS ELB" as LoadBalancer
+}
+
+node "Application Server Cluster" as AppCluster {
+  node "App Server 1" as App1 {
+    component "API Gateway" as API1
+    component "Auth Service" as Auth1
+    component "User Service" as User1
+  }
+  
+  node "App Server 2" as App2 {
+    component "Job Service" as Job1
+    component "Application Service" as AppSvc1
+    component "Notification Service" as Notif1
+  }
+  
+  node "App Server 3" as App3 {
+    component "Community Service" as Comm1
+    component "Analytics Service" as Analytics1
+    component "Document Service" as Doc1
+  }
+}
+
+node "Database Server Cluster" as DBCluster {
+  node "Primary DB Server" as PrimaryDB {
+    database "PostgreSQL\nMaster" as Master
+  }
+  
+  node "Replica DB Server" as ReplicaDB {
+    database "PostgreSQL\nReplica" as Replica
+  }
+}
+
+node "Cache Server" as CacheNode {
+  database "Redis Cache" as Redis
+}
+
+node "Search Server" as SearchNode {
+  database "Elasticsearch" as Elastic
+}
+
+node "Message Queue Server" as QueueNode {
+  component "RabbitMQ" as Queue
+}
+
+node "Cloud Storage" as CloudNode {
+  database "AWS S3\nFile Storage" as S3
+}
+
+node "External Services" as External {
+  component "Email Service\n(SendGrid)" as Email
+  component "SMS Gateway" as SMS
+  component "Payment Gateway" as Payment
+}
+
+node "Monitoring Server" as MonitorNode {
+  component "Prometheus" as Prometheus
+  component "Grafana" as Grafana
+  component "ELK Stack" as ELK
+}
+
+' Connections
+WebApp --> LoadBalancer : HTTPS
+Android --> LoadBalancer : HTTPS
+iOS --> LoadBalancer : HTTPS
+
+LoadBalancer --> API1 : HTTP
+LoadBalancer --> Job1 : HTTP
+LoadBalancer --> Comm1 : HTTP
+
+API1 --> Auth1
+API1 --> User1
+
+Auth1 --> Master : TCP/5432
+User1 --> Master : TCP/5432
+Job1 --> Master : TCP/5432
+AppSvc1 --> Master : TCP/5432
+Notif1 --> Master : TCP/5432
+Comm1 --> Master : TCP/5432
+Analytics1 --> Master : TCP/5432
+Doc1 --> Master : TCP/5432
+
+Master --> Replica : Replication
+
+User1 --> Redis : TCP/6379
+Job1 --> Redis : TCP/6379
+
+Job1 --> Elastic : HTTP/9200
+
+AppSvc1 --> Queue : AMQP/5672
+Notif1 --> Queue : AMQP/5672
+Job1 --> Queue : AMQP/5672
+
+Queue --> Email : HTTPS
+Queue --> SMS : HTTPS
+
+Doc1 --> S3 : HTTPS
+
+AppSvc1 --> Payment : HTTPS
+
+Prometheus --> App1 : Metrics
+Prometheus --> App2 : Metrics
+Prometheus --> App3 : Metrics
+Prometheus --> Master : Metrics
+
+Grafana --> Prometheus : Query
+
+ELK --> App1 : Logs
+ELK --> App2 : Logs
+ELK --> App3 : Logs
+
+note right of LoadBalancer
+  **Load Balancer**
+  - SSL Termination
+  - Request Distribution
+  - Health Checks
+end note
+
+note bottom of DBCluster
+  **Database Cluster**
+  - Master-Replica Setup
+  - Automatic Failover
+  - Read/Write Splitting
+end note
+
+note left of MonitorNode
+  **Monitoring Stack**
+  - Real-time Metrics
+  - Log Aggregation
+  - Alerting
+end note
+
+@enduml

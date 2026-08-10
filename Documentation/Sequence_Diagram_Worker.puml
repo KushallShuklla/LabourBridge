@@ -1,0 +1,64 @@
+@startuml LabourBridge_Sequence_Worker
+
+title LabourBridge - Worker Job Application Sequence
+
+actor Worker
+participant "UI" as UI
+participant "AuthService" as Auth
+participant "JobService" as Job
+participant "ApplicationService" as App
+participant "NotificationService" as Notif
+database "Database" as DB
+
+== Authentication ==
+Worker -> UI: Open App
+UI -> Auth: login(email, password)
+Auth -> DB: validateCredentials()
+DB --> Auth: userDetails
+Auth --> UI: loginSuccess
+UI --> Worker: Show Dashboard
+
+== Job Search ==
+Worker -> UI: Search Jobs
+UI -> Job: searchJobs(filters)
+Job -> DB: queryJobs(criteria)
+DB --> Job: jobList
+Job --> UI: displayJobs
+UI --> Worker: Show Job Results
+
+== View Job Details ==
+Worker -> UI: Select Job
+UI -> Job: getJobDetails(jobId)
+Job -> DB: fetchJob(jobId)
+DB --> Job: jobDetails
+Job --> UI: displayJobDetails
+UI --> Worker: Show Full Details
+
+== Apply for Job ==
+Worker -> UI: Click Apply
+UI -> App: createApplication(workerId, jobId)
+App -> DB: checkExistingApplication()
+alt Already Applied
+  DB --> App: applicationExists
+  App --> UI: errorMessage
+  UI --> Worker: "Already Applied"
+else New Application
+  DB --> App: noApplication
+  App -> DB: saveApplication()
+  DB --> App: applicationSaved
+  App -> Notif: sendNotification(employerId)
+  Notif -> DB: saveNotification()
+  Notif --> App: notificationSent
+  App --> UI: applicationSuccess
+  UI --> Worker: "Application Submitted"
+end
+
+== Track Applications ==
+Worker -> UI: View My Applications
+UI -> App: getApplications(workerId)
+App -> DB: fetchApplications()
+DB --> App: applicationList
+App --> UI: displayApplications
+UI --> Worker: Show Application Status
+
+@enduml

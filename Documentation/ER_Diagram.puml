@@ -1,0 +1,133 @@
+@startuml LabourBridge_ER_Diagram
+
+title LabourBridge - Entity Relationship Diagram
+
+skinparam linetype ortho
+
+entity "User" as user {
+  * user_id : VARCHAR(50) <<PK>>
+  --
+  * email : VARCHAR(100) <<UNIQUE>>
+  * password : VARCHAR(255)
+  * phone : VARCHAR(20)
+  * role : ENUM('WORKER','EMPLOYER')
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+}
+
+entity "Worker" as worker {
+  * worker_id : VARCHAR(50) <<PK>>
+  --
+  * user_id : VARCHAR(50) <<FK>>
+  * name : VARCHAR(100)
+  photo : VARCHAR(255)
+  * location : VARCHAR(100)
+  experience : INT
+  bio : TEXT
+  * created_at : TIMESTAMP
+}
+
+entity "Skill" as skill {
+  * skill_id : VARCHAR(50) <<PK>>
+  --
+  * skill_name : VARCHAR(50)
+}
+
+entity "Worker_Skill" as worker_skill {
+  * worker_id : VARCHAR(50) <<FK>>
+  * skill_id : VARCHAR(50) <<FK>>
+  --
+  proficiency : ENUM('BEGINNER','INTERMEDIATE','EXPERT')
+}
+
+entity "Employer" as employer {
+  * employer_id : VARCHAR(50) <<PK>>
+  --
+  * user_id : VARCHAR(50) <<FK>>
+  * company_name : VARCHAR(100)
+  company_logo : VARCHAR(255)
+  industry : VARCHAR(50)
+  * location : VARCHAR(100)
+  description : TEXT
+  * created_at : TIMESTAMP
+}
+
+entity "Job" as job {
+  * job_id : VARCHAR(50) <<PK>>
+  --
+  * employer_id : VARCHAR(50) <<FK>>
+  * title : VARCHAR(100)
+  * description : TEXT
+  requirements : TEXT
+  salary : DECIMAL(10,2)
+  * location : VARCHAR(100)
+  * status : ENUM('ACTIVE','EXPIRED','CLOSED')
+  * posted_date : TIMESTAMP
+  expiry_date : TIMESTAMP
+}
+
+entity "Application" as application {
+  * application_id : VARCHAR(50) <<PK>>
+  --
+  * job_id : VARCHAR(50) <<FK>>
+  * worker_id : VARCHAR(50) <<FK>>
+  * applied_date : TIMESTAMP
+  * status : ENUM('PENDING','SHORTLISTED','REJECTED','ACCEPTED')
+  cover_letter : TEXT
+}
+
+entity "Document" as document {
+  * document_id : VARCHAR(50) <<PK>>
+  --
+  * worker_id : VARCHAR(50) <<FK>>
+  * file_name : VARCHAR(255)
+  * file_type : VARCHAR(50)
+  file_path : VARCHAR(500)
+  * upload_date : TIMESTAMP
+  verified : BOOLEAN
+}
+
+entity "Community" as community {
+  * community_id : VARCHAR(50) <<PK>>
+  --
+  * name : VARCHAR(100)
+  description : TEXT
+  * created_date : TIMESTAMP
+  member_count : INT
+}
+
+entity "Community_Member" as community_member {
+  * community_id : VARCHAR(50) <<FK>>
+  * worker_id : VARCHAR(50) <<FK>>
+  --
+  joined_date : TIMESTAMP
+}
+
+entity "Notification" as notification {
+  * notification_id : VARCHAR(50) <<PK>>
+  --
+  * user_id : VARCHAR(50) <<FK>>
+  * message : TEXT
+  * type : VARCHAR(50)
+  * sent_date : TIMESTAMP
+  is_read : BOOLEAN
+}
+
+user ||--|| worker
+user ||--|| employer
+user ||--o{ notification
+
+worker ||--o{ worker_skill
+skill ||--o{ worker_skill
+
+worker ||--o{ application
+worker ||--o{ document
+worker ||--o{ community_member
+
+employer ||--o{ job
+
+job ||--o{ application
+
+community ||--o{ community_member
+
+@enduml

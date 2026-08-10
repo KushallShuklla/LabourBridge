@@ -1,0 +1,94 @@
+@startuml LabourBridge_Activity_Worker
+
+title LabourBridge - Worker Activity Diagram
+
+skinparam activityBackgroundColor #F0F0F0
+skinparam activityBorderColor #000000
+skinparam activityDiamondBackgroundColor #FFFFCC
+skinparam activityStartColor #90EE90
+skinparam activityEndColor #FF6B6B
+
+start
+
+:Login to System;
+
+if (First Time User?) then (yes)
+  :Create Worker Profile;
+  :Add Personal Details;
+  :Upload Photo;
+  :Add Skills & Experience;
+  :Upload Documents;
+else (no)
+endif
+
+:View Dashboard;
+
+repeat
+  :Select Action;
+  
+  if (Action Type?) then (Search Jobs)
+    :Enter Search Criteria;
+    :Apply Filters (Location, Salary, Type);
+    :View Job Listings;
+    if (Job Found?) then (yes)
+      :View Job Details;
+      if (Interested?) then (yes)
+        if (Already Applied?) then (no)
+          :Submit Application;
+          :Add Cover Letter;
+          :Application Submitted;
+          :Receive Confirmation;
+        else (yes)
+          :Show "Already Applied";
+        endif
+      else (no)
+        :Bookmark Job;
+      endif
+    else (no)
+      :No Jobs Available;
+    endif
+    
+  elseif (Track Applications) then
+    :View All Applications;
+    :Check Application Status;
+    if (Status Updated?) then (yes)
+      :View Notification;
+      if (Shortlisted?) then (yes)
+        :Prepare for Interview;
+      else (Rejected)
+        :Continue Job Search;
+      endif
+    else (no)
+      :Status Pending;
+    endif
+    
+  elseif (Update Profile) then
+    :Edit Profile Details;
+    :Update Skills;
+    :Upload New Documents;
+    :Save Changes;
+    
+  elseif (Join Community) then
+    :Browse Communities;
+    :Select Community;
+    :Join Community;
+    :Interact with Members;
+    
+  elseif (View Analytics) then
+    :View Profile Views;
+    :Check Application Stats;
+    :See Job Recommendations;
+    
+  else (Notifications/Settings)
+    :Check Notifications;
+    :Update Settings;
+  endif
+
+repeat while (Continue?) is (yes)
+->no;
+
+:Logout;
+
+stop
+
+@enduml

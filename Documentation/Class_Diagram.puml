@@ -1,0 +1,141 @@
+@startuml LabourBridge_Class_Diagram
+
+title LabourBridge - Class Diagram
+
+skinparam classBackgroundColor #F0F0F0
+skinparam classBorderColor #000000
+skinparam classArrowColor #000000
+
+class User {
+  - userId: String
+  - email: String
+  - password: String
+  - phone: String
+  - role: UserRole
+  - createdAt: Date
+  + login()
+  + logout()
+  + updateProfile()
+}
+
+enum UserRole {
+  WORKER
+  EMPLOYER
+}
+
+class Worker {
+  - workerId: String
+  - name: String
+  - photo: String
+  - skills: List<String>
+  - experience: int
+  - location: String
+  - documents: List<Document>
+  + createProfile()
+  + searchJobs()
+  + applyForJob()
+  + trackApplications()
+}
+
+class Employer {
+  - employerId: String
+  - companyName: String
+  - companyLogo: String
+  - industry: String
+  - location: String
+  - description: String
+  + createCompanyProfile()
+  + postJob()
+  + viewApplications()
+  + shortlistWorker()
+  + searchTalent()
+}
+
+class Job {
+  - jobId: String
+  - title: String
+  - description: String
+  - requirements: String
+  - salary: double
+  - location: String
+  - status: JobStatus
+  - postedDate: Date
+  - expiryDate: Date
+  + publish()
+  + edit()
+  + delete()
+  + expire()
+}
+
+enum JobStatus {
+  ACTIVE
+  EXPIRED
+  CLOSED
+}
+
+class Application {
+  - applicationId: String
+  - appliedDate: Date
+  - status: ApplicationStatus
+  - coverLetter: String
+  + submit()
+  + updateStatus()
+  + review()
+}
+
+enum ApplicationStatus {
+  PENDING
+  SHORTLISTED
+  REJECTED
+  ACCEPTED
+}
+
+class Community {
+  - communityId: String
+  - name: String
+  - description: String
+  - createdDate: Date
+  - memberCount: int
+  + create()
+  + join()
+  + leave()
+}
+
+class Notification {
+  - notificationId: String
+  - message: String
+  - type: String
+  - sentDate: Date
+  - isRead: boolean
+  + send()
+  + markAsRead()
+}
+
+class Document {
+  - documentId: String
+  - fileName: String
+  - fileType: String
+  - uploadDate: Date
+  - verified: boolean
+  + upload()
+  + verify()
+}
+
+User <|-- Worker
+User <|-- Employer
+User "1" -- "1" UserRole
+
+Worker "1" -- "*" Application
+Worker "1" -- "*" Document
+Worker "*" -- "*" Community
+Worker "1" -- "*" Notification
+
+Employer "1" -- "*" Job
+Employer "1" -- "*" Notification
+
+Job "1" -- "1" JobStatus
+Job "1" -- "*" Application
+
+Application "1" -- "1" ApplicationStatus
+
+@enduml

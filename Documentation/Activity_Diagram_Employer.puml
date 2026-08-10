@@ -1,0 +1,76 @@
+@startuml LabourBridge_Activity_Employer
+
+title LabourBridge - Employer Activity Diagram
+
+skinparam activityBackgroundColor #F0F0F0
+skinparam activityBorderColor #000000
+skinparam activityDiamondBackgroundColor #FFFFCC
+skinparam activityStartColor #90EE90
+skinparam activityEndColor #FF6B6B
+
+start
+
+:Login to System;
+
+if (First Time User?) then (yes)
+  :Create Company Profile;
+  :Add Company Details;
+else (no)
+endif
+
+:View Dashboard;
+
+repeat
+  :Select Action;
+  
+  if (Action Type?) then (Post Job)
+    :Click Post New Job;
+    :Enter Job Details;
+    :Set Requirements;
+    :Publish Job;
+    :Job Posted Successfully;
+    
+  elseif (View Applications) then
+    :View All Applications;
+    if (Applications Available?) then (yes)
+      :Select Application;
+      :Review Worker Profile;
+      if (Suitable?) then (yes)
+        :Shortlist Worker;
+        :Send Notification;
+      else (no)
+        :Reject Application;
+      endif
+    else (no)
+      :No Applications Yet;
+    endif
+    
+  elseif (Search Talent) then
+    :Enter Search Criteria;
+    :Apply Filters;
+    :View Talent Pool;
+    :Contact Worker;
+    
+  elseif (Manage Jobs) then
+    :View Posted Jobs;
+    :Select Job;
+    if (Action?) then (Edit)
+      :Update Job Details;
+      :Save Changes;
+    else (Delete)
+      :Confirm Deletion;
+      :Remove Job;
+    endif
+    
+  else (Settings)
+    :Update Profile/Settings;
+  endif
+
+repeat while (Continue?) is (yes)
+->no;
+
+:Logout;
+
+stop
+
+@enduml
