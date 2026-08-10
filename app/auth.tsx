@@ -27,9 +27,11 @@ export default function AuthScreen() {
   // SIGN UP FUNCTION
   const signUp = async () => {
     try {
-      console.log('Starting signup...');
-      console.log('Email:', email);
-      
+      if (!role) {
+        alert('Please select a role first.');
+        return;
+      }
+
       // Store role
       if (Platform.OS === 'web') {
         localStorage.setItem('userRole', role);
@@ -42,11 +44,7 @@ export default function AuthScreen() {
         password,
       });
 
-      console.log('Auth signup response:', JSON.stringify({ data, error }, null, 2));
-
       if (error) {
-        console.error('Auth error:', error);
-        console.error('Full error object:', JSON.stringify(error, null, 2));
         
         if (!error.message && !error.status) {
           alert('Network error. Please check your internet connection and try again.');
@@ -64,22 +62,16 @@ export default function AuthScreen() {
       }
 
       const savedRole = await getRole();
-      console.log('Role:', savedRole);
-      console.log('User ID:', data.user?.id);
 
       if (data.user && savedRole) {
-        console.log('Inserting profile...');
-        const { data: profileData, error: profileError } = await supabase.from('profiles').insert({
+        const { error: profileError } = await supabase.from('profiles').insert({
           id: data.user.id,
-          role: role,
+          role: savedRole,
         });
 
-        console.log('Profile insert response:', { profileData, profileError });
-
         if (profileError) {
-          console.error('Profile error details:', JSON.stringify(profileError, null, 2));
           if (profileError.code === '23505') {
-            alert('This email is already registered with a different role. Please use a different email.');
+            alert('This email is already registered. Please use a different email.');
           } else {
             alert(`Profile Error: ${profileError.message}`);
           }
@@ -97,8 +89,7 @@ export default function AuthScreen() {
       alert('Signup successful. Please login.');
       setIsLogin(true);
     } catch (err: any) {
-      console.error('Catch error:', err);
-      alert(`Signup Error:\nMessage: ${err?.message || 'Unknown'}\nStack: ${err?.stack || 'N/A'}`);
+      alert(`Signup Error: ${err?.message || 'Unknown error'}`);
     }
   };
 
