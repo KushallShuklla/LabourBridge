@@ -63,11 +63,11 @@ export default function AuthScreen() {
         return;
       }
 
-      const role = await getRole();
-      console.log('Role:', role);
+      const savedRole = await getRole();
+      console.log('Role:', savedRole);
       console.log('User ID:', data.user?.id);
 
-      if (data.user && role) {
+      if (data.user && savedRole) {
         console.log('Inserting profile...');
         const { data: profileData, error: profileError } = await supabase.from('profiles').insert({
           id: data.user.id,
