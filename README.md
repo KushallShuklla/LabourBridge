@@ -32,6 +32,7 @@ LabourBridge is a bilingual (English/Hindi) mobile application designed to bridg
 - No digital presence or skill verification
 - Language barriers in existing platforms
 - No centralized platform for job applications
+- Ai based job search
 
 **For Employers:**
 - Challenges finding skilled workers quickly
@@ -263,7 +264,6 @@ eas submit --platform android
 - In-app messaging between workers and employers
 - Video profile feature
 - Payment integration for premium features
-- AI-based job recommendations
 - Rating and review system
 
 **Medium-term (6–12 months)**
@@ -301,8 +301,6 @@ LabourBridge aims to:
 
 ---
 
-## 📄 License
 
-This project is **private** and not open for public use.
 
 © LabourBridge 2026 — All Rights Reserved
